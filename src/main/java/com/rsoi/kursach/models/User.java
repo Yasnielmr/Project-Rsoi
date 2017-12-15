@@ -1,55 +1,132 @@
 package com.rsoi.kursach.models;
 
-import java.util.Objects;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.rsoi.kursach.enums.UserStatusEnum;
+import com.rsoi.kursach.repository.AuditingEntity;
+import com.rsoi.kursach.repository.BaseEntity;
+import java.io.Serializable;
+import java.util.List;
+import javax.persistence.*;
+import org.hibernate.annotations.Type;
 
 @Entity
-public class User {
+@Table(name = "users")
+@NamedQuery(name = "User.findAll", query = "SELECT u FROM User u")
+public class User extends AuditingEntity implements BaseEntity, Serializable{
+    private static final long serialVersionUID = 1L;
     
     @Id
-    @GeneratedValue
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
+    private Long userId;
     
-    private String username;
+    @Column(name = "firstName")
+    private String firstName;
     
+    @Column(name = "userName")
+    private String userName;
+    
+    @Column(name = "last_Name")
+    private String lastName;
+    
+    @Column(name = "email")
     private String email;
+    private String password;
+    private String title;
     
-    private Integer age;
-    private String address;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    private List<UserRole> userRoles;
+    
+    @Column(name = "status")
+    @Type(type = "pe.joedayz.api.enums.GenericEnumUserType", parameters = {
+          @org.hibernate.annotations.Parameter(name = "enumClass", value = "pe.joedayz.api.enums.UserStatusEnum") })
+    private UserStatusEnum status;
+
+
 
     public User() {
-        super();
     }
 
-    public User(Long id, String username, String email, Integer age, String address) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-        this.age = age;
-        this.address = address;
+    public User(Long userId) {
+        this.userId = userId;
     }
     
-    public Long getId() {
-        return id;
+    public String getFullName() {
+		return firstName + " " + lastName;
+    }
+    
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public String getFirstName() {
+        return firstName;
+    }
+    
+    public long getUserId() {
+	return this.userId;
+   }
+    
+    public void setUserId(long userId){
+		this.userId = userId;
     }
 
-   
-    public Integer getAge() {
-        return age;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setAge(Integer age) {
-        this.age = age;
+    public String getPassword() {
+        return password;
+    }
+
+    public UserStatusEnum getStatus() {
+        return status;
+    }
+
+    public void setStatus(UserStatusEnum status) {
+        this.status = status;
+    }
+    
+    public String getTitle() {
+        return title;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    
+    public String getFirstname() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setFirstname(String firstname) {
+        this.firstName = firstname;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getUsername() {
-        return username;
+        return userName;
     }
 
     public String getEmail() {
@@ -57,20 +134,33 @@ public class User {
     }
 
     public void setUsername(String username) {
-        this.username = username;
+        this.userName = username;
     }
 
     public void setEmail(String email) {
         this.email = email;
     }
 
-    public String getAddress() {
-        return address;
+    public List<UserRole> getUserRoles() {
+        return userRoles;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setUserRoles(List<UserRole> userRoles) {
+        this.userRoles = userRoles;
     }
     
+    public UserRole addUserRoles(UserRole userRoles) {
+		getUserRoles().add(userRoles);
+		userRoles.setUser(this);
+
+		return userRoles;
+	}
+
+	public UserRole removeUserRoles(UserRole userRoles) {
+		getUserRoles().remove(userRoles);
+		userRoles.setUser(null);
+
+		return userRoles;
+	}
    
 }

@@ -1,0 +1,14 @@
+# Properties active for ALL profiles:
+---
+spring:
+  application:
+    name: kursachclient
+  cloud:
+    config:
+     discovery:
+      service-id: springcloudserver
+      enabled: true
+      uri: http://localhost:8888
+      failFast: true
+      
+    
